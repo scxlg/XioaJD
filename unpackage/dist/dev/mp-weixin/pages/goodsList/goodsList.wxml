@@ -1,0 +1,1 @@
+<view><view style="display:flex;align-items:center;background-color:#fff;margin-bottom:3px"><uni-icons wx:if="{{b}}" bindclick="{{a}}" u-i="41be049e-0" bind:__l="__l" u-p="{{b}}"></uni-icons><uni-search-bar wx:if="{{d}}" class="uni-mt-10" bindconfirm="{{c}}" u-i="41be049e-1" bind:__l="__l" u-p="{{d}}"/></view></view>

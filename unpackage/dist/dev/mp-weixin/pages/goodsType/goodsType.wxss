@@ -1,0 +1,14 @@
+
+.goods-list-mian{
+	width: 100%;
+	background-color: #fff;
+	overflow-y: auto;
+}
+.goods-list-aside{
+	width: 100px;
+	height: 83vh;
+	overflow-y: auto;
+}
+.goods-list-aside::-webkit-scrollbar{
+	display: none;
+}

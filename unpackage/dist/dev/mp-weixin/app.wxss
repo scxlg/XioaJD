@@ -1,0 +1,8 @@
+
+	/*每个页面公共css */
+	/* 隐藏header */
+	/* uni-page-head { display: none; } */
+.uni-mt-10{
+		flex: 1;
+}
+page{--status-bar-height:25px;--top-window-height:0px;--window-top:0px;--window-bottom:0px;--window-left:0px;--window-right:0px;--window-magin:0px}[data-c-h="true"]{display: none !important;}

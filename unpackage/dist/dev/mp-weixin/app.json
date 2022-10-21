@@ -1,0 +1,39 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/goodsType/goodsType",
+    "pages/goodsList/goodsList",
+    "pages/goodsCar/goodsCar",
+    "pages/user/user",
+    "pages/test/test"
+  ],
+  "window": {
+    "navigationStyle": "custom"
+  },
+  "tabBar": {
+    "backgroundColor": "",
+    "color": "#000",
+    "selectedColor": "#f00",
+    "list": [
+      {
+        "text": "首页",
+        "pagePath": "pages/index/index",
+        "iconPath": "",
+        "selectedIconPath": ""
+      },
+      {
+        "text": "分类",
+        "pagePath": "pages/goodsType/goodsType"
+      },
+      {
+        "text": "购物车",
+        "pagePath": "pages/goodsCar/goodsCar"
+      },
+      {
+        "text": "用户",
+        "pagePath": "pages/user/user"
+      }
+    ]
+  },
+  "usingComponents": {}
+}

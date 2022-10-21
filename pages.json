@@ -1,0 +1,74 @@
+{
+	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+		{
+			"path": "pages/index/index"
+		},
+		{
+		    "path" : "pages/goodsType/goodsType"        
+		},
+		{
+		    "path" : "pages/pay/pay"        
+		},
+		{
+		    "path" : "pages/goodsList/goodsList"        
+		},
+		{
+            "path" : "pages/goodsCar/goodsCar"                   
+        },
+		{
+		    "path" : "pages/addAddress/addAddress"                   
+		},
+		{
+            "path" : "pages/user/user"         
+        }
+        ,{
+            "path" : "pages/goodsInfo/goodsInfo",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/login/login",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+    ],
+	"globalStyle":{
+		"navigationStyle":"custom"
+	},
+	"uniIdRouter": {},
+	"tabBar": {
+		"backgroundColor": "",
+		"color": "#000",
+		"selectedColor": "#f00",
+		"list": [
+			{
+				"text":"首页",
+				"pagePath": "pages/index/index",
+				"iconPath": "",
+				"selectedIconPath": ""
+			},
+			{
+				"text": "分类",
+				"pagePath": "pages/goodsType/goodsType"
+			},
+			{
+				"text": "购物车",
+				"pagePath": "pages/goodsCar/goodsCar"
+				
+			},
+			{
+				"text": "用户",
+				"pagePath": "pages/user/user"
+				
+			}
+		]
+	}
+}
