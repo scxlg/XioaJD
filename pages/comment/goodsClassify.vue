@@ -12,7 +12,7 @@
 </template>
 
 <script setup>
-import { defineProps, } from 'vue'
+import { defineProps } from 'vue'
 	const fromGoods = defineProps({
 		data:Object,
 	})

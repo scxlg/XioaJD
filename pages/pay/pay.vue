@@ -161,6 +161,7 @@ onLoad( () => {
 		const value = uni.getStorageSync('select-goods');
 			goodsCar.value = JSON.parse(value)
 			goodsCar.value.forEach( item => {
+				console.log(item);
 				num.value += +item.money 
 			})
 	} catch (e) {

@@ -38,22 +38,33 @@
 		<view>
 			<!-- 普通弹窗 -->
 			<uni-popup ref="popup" background-color="#fff" @change="change">
-				<view class="popup-content">
+				<view style="padding: 20px;">
 					<view style="display: flex;">
 						<view style="width: 100px;height: 100px;padding: 20px;"><img style="width: 100%;" :src="changeImg" alt=""></view>
 						<view style="display: flex;flex-direction: column;justify-content: end;padding-bottom: 20px;">
-							<view>{{goodsInfo.good_name}}</view>
+							<!-- <view>{{goodsInfo.good_name}}</view> -->
 							<view style="color: #F00;font-size: 20px;margin: 10px 0;"><sub>￥</sub>{{changePic}}.00</view>
-							<view><text style="font-size: 12px;color: #ddd;margin-right: 10px;">已选 </text>{{changeText}}</view>
+							<view style="font-size: 14px;width: 220px;"><text style="font-size: 12px;color: #ddd;margin-right: 10px;">已选 </text>{{changeText}}</view>
 						</view>
 					</view>
-					<!-- <view v-for="item in goodsEdition.sku_column" :key="item">
-						<view>{{item.key}}</view>
-						<view v-for="items in item.value" style="width: 120px;padding-left: 10px;">
-							<button style="border-radius: 23px;width: 120px;margin-bottom: 20px;" @click="changeBtn(items)">{{items}}</button>
+					<scroll-view scroll-y="true" style="height: 30vh;">
+					<view v-for="(item,index) in goodsEdition.sku_column" :key="item">
+						<view style="margin-bottom:20px ;">{{item.key}}</view>
+						<view style="display: flex;flex-wrap: wrap;">
+							<view v-for="(items,indexs) in item.check" style="padding-left: 10px;">
+								<view :class="{'checked': items.active}" style="border: 1px solid transparent; background-color: #eee;padding: 10px 20px;text-align: center; border-radius: 23px;margin-bottom: 20px;" @click="changeBtn(item,items,indexs)">{{items.name}}</view>
+								<!-- <view :class="indexs === rightIndex  && index === Index?'checked' : ''" style="border: 1px solid transparent; background-color: #eee;padding: 10px 20px;text-align: center; border-radius: 23px;margin-bottom: 20px;" @click="changeBtn(items,index,indexs)">{{items}}</view> -->
+							</view>
 						</view>
-					</view> -->
-					<scroll-view scroll-y="true" style="margin: 20px;height: 60vh;">
+					</view>
+					<view style="display: flex;justify-content: space-between;">
+						<text>数量</text>
+						<uni-section padding>
+							<uni-number-box v-model="goodsNum" @change="changeValue" :min="1" :max="10"/>
+						</uni-section>
+					</view>
+					</scroll-view>
+					<!-- <scroll-view scroll-y="true" style="margin: 20px;height: 60vh;">
 						<view style="margin-bottom: 20px;">规格</view>
 						<view style="display: flex;flex-wrap: wrap;">
 							<view v-for="(item,index) in goodsEdition.sku_list" :key="item"  style="background-color: #F2F2F2; margin-right: 10px; border-radius: 23px;padding: 10px 20px;margin-bottom: 10px;" @click="changeBtn(item,index)">{{item.sku.toString().replace(',','+')}}</view>
@@ -64,7 +75,7 @@
 								<uni-number-box v-model="goodsNum" @change="changeValue" :min="1" :max="10"/>
 							</uni-section>
 						</view>
-					</scroll-view>
+					</scroll-view> -->
 				</view>
 				<view class="goods-carts-show">
 					<button @click="buttonClickAdd">加入购物车</button><button>立即购买</button>
@@ -77,6 +88,9 @@
 <script setup>
 	import { ref,getCurrentInstance } from "vue"
 	import { onLoad} from '@dcloudio/uni-app'
+	// 点击默认样式
+	let rightIndex = ref(0)
+	let Index = ref(0)
 	let goodsInfo = ref([])
 	let goodsEdition = ref([])
 	let changeText = ref()
@@ -131,7 +145,31 @@
 					goodsInfo.value = res.data.data
 					goodsInfo.value.info.forEach( item => {
 						goodsEdition.value = JSON.parse(item.edition)
+						goodsSku.value = JSON.stringify(goodsEdition.value.sku_list[0])
+						changeText.value = JSON.parse(goodsSku.value).sku.toString().replace(',','+')
+						changePic.value = JSON.parse(goodsSku.value).price
+						changeImg.value = JSON.parse(goodsSku.value).imgsrc
+						goodsNum.value = 1
 						item.info = JSON.parse(item.info)
+						// goodsEdition.value.sku_list.forEach( item => {
+							
+						// })
+						goodsEdition.value.sku_column.forEach( item => {
+							item.check = []
+							item.value.forEach( (items,indexs) => {
+								if(indexs == 0){
+									item.check.push({
+										name:items,
+										active:true
+										})
+								}else{
+									item.check.push({
+										name:items,
+										active:false
+										})
+								}
+							})
+						})
 						if(item.info.indexOf('"') == 0){
 							item.info = JSON.parse(item.info)					
 						}
@@ -161,24 +199,54 @@
 		}
 	}
 	//选择规格
-	const changeBtn = (i,index) => {
-		i.num = 1
-		i.good_id = goodId.value
-		selectData.value = i
-		changeText.value = i.sku.toString().replace(',','+')
-		changePic.value = i.price
-		changeImg.value = i.imgsrc
-		goodsNum.value = i.num
-		goodsSku.value = JSON.stringify(goodsEdition.value.sku_list[index])
+	const changeBtn = (item,i,index,indexs) => {
+		// rightIndex.value = indexs
+		// Index.value = index
+		let arr = []
+		item.check.forEach( items => {
+			items.active = false
+		})
+		i.active = !i.active
+		goodsEdition.value.sku_column.forEach( item => {
+			item.check.forEach( items => {
+				if(items.active == true){
+					arr.push(items.name)
+				}
+			})
+		})
+		goodsEdition.value.sku_list.forEach( item => {
+			if(arr[0] == item.sku[0] && arr[1] == item.sku[1] && arr[2] == item.sku[2]){
+				changeText.value = item.sku.toString().replace(',','+')
+				changePic.value = item.price
+				changeImg.value = item.imgsrc
+				i.num = 1
+				selectData.value = i
+				goodsNum.value = i.num
+				goodsSku.value = JSON.stringify(goodsEdition.value.sku_list[index])
+			}
+		})
+		
+		
+		
+		//展开的sku
+		// i.num = 1
+		// i.good_id = goodId.value
+		// selectData.value = i
+		// changeText.value = i.sku.toString().replace(',','+')
+		// changePic.value = i.price
+		// changeImg.value = i.imgsrc
+		// goodsNum.value = i.num
+		// goodsSku.value = JSON.stringify(goodsEdition.value.sku_list[index])
 	}
 	//加入购物车
 	const buttonClickAdd = () => {
 		// 刷新不消失
-		// if(uni.getStorageSync('storage_key') == ''){
-		// 	carData.value = []
-		// }else{
-		// 	carData.value = JSON.parse(uni.getStorageSync('storage_key'))
-		// }
+		if(uni.getStorageSync('storage_key') == ''){
+			carData.value = []
+		}else{
+			carData.value = JSON.parse(uni.getStorageSync('storage_key'))
+		}
+		
 		proxy.$refs.popup.close('bottom')
 		uni.showToast({
 			title: `加入购物车成功`,
@@ -188,34 +256,16 @@
 		if(carData.value.length < 1){
 			carData.value.push({
 				goods_name:goodsInfo.value.good_name,
+				good_id:goodId.value,
 				name:changeText.value,
 				price:changePic.value,
 				image:changeImg.value,
 				num:goodsNum.value,
 				money:changePic.value * goodsNum.value,
 				sku:goodsSku.value,
-				good_id:goodId.value
 			})
 		}else{
-			// carData.value.forEach( item => {
-			// 	if( item.good_id == goodId.value && item.name == changeText.value){
-			// 		item.num += goodsNum.value
-			// 		item.money = item.price * item.num
-			// 		console.log(222);
-			// 	}else{
-			// 		carData.value.push({
-			// 			goods_name:goodsInfo.value.good_name,
-			// 			name:changeText.value,
-			// 			price:changePic.value,
-			// 			image:changeImg.value,
-			// 			num:goodsNum.value,
-			// 			money:changePic.value * goodsNum.value,
-			// 			sku:goodsSku.value,
-			// 			good_id:goodId.value
-			// 		})
-			// 		console.log(333);
-			// 	}
-			// })
+			//判断加num还是商品
 			let falg = 0
 			for(let i = 0; i< carData.value.length;i++){
 				if( carData.value[i].good_id == goodId.value && carData.value[i].name == changeText.value){
@@ -238,32 +288,32 @@
 			}
 		}
 			//临时购物车
-		if( uni.getStorageSync('token') == ''){
+		// if( uni.getStorageSync('token') == ''){
 			try {
 				uni.setStorageSync('storage_key',JSON.stringify(carData.value));
 			} catch (e) {
 				// error
 			}
-		}else{
-			if(getCurrentPages()[0].route != 'pages/goodsInfo/goodsInfo'){
-				carData.value.forEach( (item,index) => {
-					uni.request({
-						url:'http://api_devs.wanxikeji.cn/api/shoppingCarAddModify',
-						method:'POST',
-						data:{
-							token:uni.getStorageSync('token'),
-							good_id:item.good_id,
-							num:item.num,
-							price:item.price,
-							money:item.money,
-							sku:item.sku
-						},
-						success: (res) => {
-						}
-					})
-				})
-			}
-			}
+		// }else{
+		// 	if(getCurrentPages()[0].route != 'pages/goodsInfo/goodsInfo'){
+		// 		carData.value.forEach( (item,index) => {
+		// 			uni.request({
+		// 				url:'http://api_devs.wanxikeji.cn/api/shoppingCarAddModify',
+		// 				method:'POST',
+		// 				data:{
+		// 					token:uni.getStorageSync('token'),
+		// 					good_id:item.good_id,
+		// 					num:item.num,
+		// 					price:item.price,
+		// 					money:item.money,
+		// 					sku:item.sku
+		// 				},
+		// 				success: (res) => {
+		// 				}
+		// 			})
+		// 		})
+		// 	}
+			// }
 	}
 </script>
 
@@ -303,5 +353,11 @@
 .goods-carts-show button:last-child{
 	border-radius: 0 23px 23px 0;
 	background-image: linear-gradient(90deg, #FE6035, #EF1224);
+}
+/* 选中样式 */
+.checked{
+	border: #EF1224 1px solid;
+	background-color: #FCEDEB !important;
+	color: #f00;
 }
 </style>

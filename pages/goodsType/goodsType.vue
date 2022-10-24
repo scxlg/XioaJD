@@ -7,7 +7,8 @@
 		<view style="display: flex;">
 			<view class="goods-list-aside">
 				<view style="width: 80px;background-color: #eee;list-style: none;padding: 0;">
-					<li style="text-align: center;padding: 5px 2px;" v-for="(item,index) in goodsList" :key="item" @click="asideList(index,$event,item)" :id="'li' + index" ref="listRef">{{item.type_name}}</li>
+					<!-- <li style="text-align: center;padding: 5px 2px;" v-for="(item,index) in goodsList" :key="item" @click="asideList(index,$event,item)" :id="'li' + index" ref="listRef">{{item.type_name}}</li> -->
+					<li style="text-align: center;padding: 5px 2px;" v-for="(item,index) in goodsList" :key="item" @click="asideList(index,item)" :class="index === Index?'active':''" :id="'li' + index" ref="listRef">{{item.type_name}}</li>
 				</view>
 			</view>
 			<view class="goods-list-mian">
@@ -18,11 +19,14 @@
 </template>
 
 <script setup>
-	import { ref, getCurrentInstance  } from 'vue'
+	import { ref, getCurrentInstance } from 'vue'
 	import goodsClassify from '../comment/goodsClassify.vue'
+	// import { onShow,onReady} from '@dcloudio/uni-app'
 	const { proxy } = getCurrentInstance()
 	let goodsList = ref([])
 	let toChildData = ref('')
+	//默认样式0
+	let Index = ref(0)
 	//商品列表
 	function getGoodType(){
 		uni.request({
@@ -43,21 +47,27 @@
 						}
 					})
 				})
+				asideList(0,goodsList.value[0])
 			})
 		}
 	getGoodType()
-	const asideList = (index,e,item) => {
+	const asideList = (index,item) => {
+		Index.value = index
 		toChildData.value = item
-		proxy.$refs.listRef.forEach( (item,idx) => {
-			if(index == idx){
-				item.style.backgroundColor = '#fff'
-				item.style.color = '#f00'
-			}else{
-				item.style.backgroundColor = ''
-				item.style.color = ''
-			}
-		})
 	}
+	// const asideList = (index,e,item) => {
+	// 	Index.value = index
+	// 	toChildData.value = item
+	// 	proxy.$refs.listRef.forEach( (item,idx) => {
+	// 		if(index == idx){
+	// 			item.style.backgroundColor = '#fff'
+	// 			item.style.color = '#f00'
+	// 		}else{
+	// 			item.style.backgroundColor = ''
+	// 			item.style.color = ''
+	// 		}
+	// 	})
+	// }
 	const backBtn = () => {
 		proxy.$router.push({path:'/'})
 	}
@@ -76,5 +86,9 @@
 }
 .goods-list-aside::-webkit-scrollbar{
 	display: none;
+}
+.active{
+	background-color: #fff;
+	color: #f00;
 }
 </style>

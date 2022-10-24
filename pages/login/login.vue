@@ -171,35 +171,9 @@
 									} catch (e) {
 										// error
 									}
-									uni.switchTab({
-										url:'/pages/goodsCar/goodsCar'
-									})
-									uni.showToast({
-										title: '登录成功',
-										icon:'success'
-									});
-								}else{
-									uni.showToast({
-										title: res.data.msg,
-										icon:'error'
-									});
-								}	
-								//登录成功把临时购物车添加到购物车
-								//登录吧购物车数据给临时购物车
-								if(uni.getStorageSync('storage_key') == ''){
-									uni.request({
-										url:'http://api_devs.wanxikeji.cn/api/shoppingCarList',
-										method:'POST',
-										data:{
-											token:uni.getStorageSync('token')
-										},
-										complete: (res) => {
-											uni.setStorageSync('storage_key',JSON.stringify(res.data.data.data))
-										}
-									})
-								}else{
 									let data1 = JSON.parse(uni.getStorageSync('storage_key'))
 									data1.forEach( (item,index) => {
+										console.log(item);
 										uni.request({
 											url:'http://api_devs.wanxikeji.cn/api/shoppingCarAddModify',
 											method:'POST',
@@ -215,7 +189,52 @@
 											}
 										})
 									})
-								}
+									uni.switchTab({
+										url:'/pages/goodsCar/goodsCar'
+									})
+									uni.showToast({
+										title: '登录成功',
+										icon:'success'
+									});
+								}else{
+									uni.showToast({
+										title: res.data.msg,
+										icon:'error'
+									});
+								}	
+								//登录成功把临时购物车添加到购物车
+								//登录吧购物车数据给临时购物车
+								// if(uni.getStorageSync('storage_key') == ''){
+								// 	uni.request({
+								// 		url:'http://api_devs.wanxikeji.cn/api/shoppingCarList',
+								// 		method:'POST',
+								// 		data:{
+								// 			token:uni.getStorageSync('token')
+								// 		},
+								// 		complete: (res) => {
+								// 			uni.setStorageSync('storage_key',JSON.stringify(res.data.data.data))
+								// 		}
+								// 	})
+								// }else{
+									// let data1 = JSON.parse(uni.getStorageSync('storage_key'))
+									// data1.forEach( (item,index) => {
+									// 	console.log(item);
+									// 	uni.request({
+									// 		url:'http://api_devs.wanxikeji.cn/api/shoppingCarAddModify',
+									// 		method:'POST',
+									// 		data:{
+									// 			token:uni.getStorageSync('token'),
+									// 			good_id:item.good_id,
+									// 			num:item.num,
+									// 			price:item.price,
+									// 			money:item.money,
+									// 			sku:item.sku
+									// 		},
+									// 		success: (res) => {
+									// 		}
+									// 	})
+									// })
+								// }
 							}
 						})
 					}

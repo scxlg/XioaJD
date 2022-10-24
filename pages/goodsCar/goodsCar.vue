@@ -22,7 +22,7 @@
 				<view v-for="(item,index) in goodsCar" :key="item">
 					<view style="display: flex;margin-top: 20px;align-items: center;">
 						<label>
-							<checkbox value="cb" :checked="item.checked" color="#fff" @click="isChecked(item)" />
+							<checkbox value="cb" :checked="item.checked" color="#fff" @click="isChecked(item,index)" />
 						</label>
 						<view @click="backInfo(item.good_id)" style="width: 100px;height: 100px;padding: 10px;box-shadow: 0 0 5px 5px #eee;box-sizing: border-box;margin: 0 10px;"><img style="width: 100%;" :src="item.image" alt=""></view>
 						<view>
@@ -90,8 +90,9 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, getCurrentInstance } from 'vue'
 import { onLoad, onShow } from "@dcloudio/uni-app";
+const { proxy } = getCurrentInstance()
 //临时购物车
 let goodsCar = ref([])
 //购物车
@@ -112,18 +113,34 @@ onShow(() => {
 	if(uni.getStorageSync('token') == ''){
 		showCar.value = true
 	}else{
-		showCar.value = false
+		// showCar.value = false
 			
 	}
 	try {
 		const value = uni.getStorageSync('storage_key');
 			goodsCar.value = JSON.parse(value)
-			goodsCar.value.forEach( item => {
-				item.checked = false
-			})
 	} catch (e) {
 		// error
 	}
+	let flag = true
+	allPrice.value = 0
+	goodsCar.value.forEach( (item,index) => {
+		if( item.checked == true){
+		allPrice.value += +item.money
+		}
+		if(goodsCar.value[index].checked != true){
+			flag = false
+		}
+		// else{
+			shopAllchecked.value = flag
+		// }
+		if( shopAllchecked.value == false){
+			allChecked.value = false	
+		}else{
+			allChecked.value = true	
+		}
+		// console.log(item)
+	})
 })
 //失去焦点
 const blurValue = () => {
@@ -206,8 +223,27 @@ const back = () => {
 }
 //删除购物车数据
 const deleteCarData = (i,index) => {
+	let flag = true
+	allPrice.value = 0
 	if(showCar.value == true){
 		goodsCar.value.splice(index,1)
+		goodsCar.value.forEach( (item,index) => {
+			if( item.checked == true){
+			allPrice.value += +item.money
+			}
+			if(goodsCar.value[index].checked != true){
+				flag = false
+			}
+			// else{
+				shopAllchecked.value = flag
+			// }
+			if( shopAllchecked.value == false){
+				allChecked.value = false	
+			}else{
+				allChecked.value = true	
+			}
+			// console.log(item)
+		})
 		uni.setStorageSync('storage_key',JSON.stringify(goodsCar.value));
 	}else{
 		uni.request({
@@ -226,6 +262,7 @@ const deleteCarData = (i,index) => {
 			}
 		})
 	}
+	proxy.$router.go(0)
 }
 //点击回到详情
 const backInfo = (i) => {
@@ -234,9 +271,15 @@ const backInfo = (i) => {
 	})
 }
 //单选
-const isChecked = (item) => {
+const isChecked = (item,index) => {
 	allPrice.value = 0
 	item.checked = !item.checked
+	goodsCar.value.forEach( (items,indexs) => {
+		if(index == indexs){
+			items.checked = item.checked
+		}
+	})
+	uni.setStorageSync('storage_key',JSON.stringify(goodsCar.value))
 	let flag = true
 	if(showCar.value == true){
 		goodsCar.value.forEach( (item,index) => {
@@ -419,8 +462,8 @@ const payBtn = () => {
 			url:'/pages/login/login'
 		})
 	}else{
-		goodsCarData.value.forEach( (item,index) => {
-			if( goodsCarData.value[index].checked == true){
+		goodsCar.value.forEach( (item,index) => {
+			if( goodsCar.value[index].checked == true){
 				flag = 1
 				arr.push(item)
 				uni.setStorageSync('select-goods',JSON.stringify(arr))
